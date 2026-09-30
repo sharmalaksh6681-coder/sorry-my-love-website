@@ -1,0 +1,24 @@
+FIXED VERSION: the Supabase anon key embedded in the previous ZIP had a typo. This version uses the exact anon/public key supplied earlier.
+
+If you still see an API-key error, open Supabase Project Settings -> API and compare the anon/public key with the one in this file. Do NOT use the service-role/secret key in a public website.
+
+SQL:
+create table if not exists public.responses (
+  id uuid primary key default gen_random_uuid(),
+  answer text not null check (answer in ('YES','NO')),
+  created_at timestamptz not null default now()
+);
+
+alter table public.responses enable row level security;
+
+grant insert, select on table public.responses to anon;
+
+drop policy if exists "allow anonymous inserts" on public.responses;
+create policy "allow anonymous inserts"
+on public.responses for insert to anon
+with check (answer in ('YES','NO'));
+
+drop policy if exists "allow anonymous reads" on public.responses;
+create policy "allow anonymous reads"
+on public.responses for select to anon
+using (true);

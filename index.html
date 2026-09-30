@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>For My Beautiful Girl ❤️</title>
+<style>
+:root{--pink:#ef7198;--deep:#6b3650;--soft:#fff4f8}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--deep);
+background:linear-gradient(135deg,#ffe0ea,#eee4ff,#e2f5ff);overflow-x:hidden}
+section{min-height:100vh;display:grid;place-items:center;padding:70px 20px}
+.card{width:min(900px,94vw);padding:46px 30px;border-radius:32px;background:#ffffffdc;
+box-shadow:0 25px 70px #4b28402b;backdrop-filter:blur(12px);text-align:center}
+h1{font-size:clamp(2.5rem,8vw,5rem);margin:8px 0}.title{font-size:1.15rem;opacity:.75}
+.heart{font-size:5rem;animation:beat 1.3s infinite}@keyframes beat{50%{transform:scale(1.15)}}
+p{font-size:1.08rem;line-height:1.75;max-width:700px;margin:20px auto}
+.btn{display:inline-block;border:0;border-radius:999px;padding:14px 25px;margin:8px;
+background:var(--pink);color:#fff;font-size:1rem;cursor:pointer;box-shadow:0 10px 24px #ef71983d}
+.btn.alt{background:#fff;color:var(--deep);border:1px solid #f0b5c8}
+.nav{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:10;
+background:#ffffffcf;padding:8px;border-radius:999px;box-shadow:0 8px 30px #0001}
+.nav a{color:var(--deep);text-decoration:none;padding:9px 13px;border-radius:999px;font-size:.9rem}
+.nav a:hover{background:#fff0f5}.box{background:var(--soft);padding:24px;border-radius:24px;margin:24px auto;max-width:720px}
+.hug{font-size:5rem;display:inline-block;transition:.3s}.hug.big{transform:scale(1.35) rotate(-4deg)}
+#hugText{min-height:32px;font-weight:600}.choice{min-width:130px}
+#result{display:none;margin-top:22px;font-size:1.1rem;font-weight:600}
+.float{position:fixed;bottom:-40px;font-size:25px;animation:up 7s linear forwards;z-index:20}
+@keyframes up{to{transform:translateY(-115vh) rotate(25deg);opacity:0}}
+.small{font-size:.9rem;opacity:.65}
+</style>
+</head>
+<body>
+<nav class="nav">
+<a href="#sorry">Sorry</a><a href="#reasons">Why</a><a href="#hug">Cuddle</a><a href="#forgive">Forgive?</a>
+</nav>
+
+<section id="sorry">
+<div class="card">
+<div class="heart">❤️</div>
+<div class="title">A little something I made just for you</div>
+<h1>I'm Sorry, My Beautiful Girl</h1>
+<p>Baby, I'm genuinely sorry for hurting your feelings. 🥺❤️ I know that when I didn't recognize you, it hurt your heart — especially when you were already not feeling well.</p>
+<a class="btn" href="#reasons">Read my apology 💌</a>
+</div>
+</section>
+
+<section id="reasons">
+<div class="card">
+<h1>What I'm Sorry For 🥺</h1>
+<div class="box">
+<p><b>I’m not making excuses.</b></p>
+<p>I understand why it hurt you. You deserved to feel recognized, seen, loved and appreciated, and I’m sorry that my mistake made you feel otherwise. ❤️</p>
+<p>I know an apology can't instantly erase hurt feelings. You don't have to pretend you're okay just because I'm sorry. Take your time. 🫂</p>
+</div>
+<a class="btn" href="#hug">Come here 🫂</a>
+</div>
+</section>
+
+<section id="hug">
+<div class="card">
+<h1>Come Here 🫂</h1>
+<div class="hug" id="hugEmoji">🫂</div>
+<p id="hugText">Press the button and come get your biggest, gentlest cuddle. ❤️</p>
+<button class="btn" onclick="cuddle()">Come here, baby 🥺🫂</button>
+<button class="btn alt" onclick="mwah()">Mwahhh 😘</button>
+<div class="box">
+<p>🤗 No pressure. No arguing. Just a warm little corner where you can breathe, relax and feel cared for.</p>
+</div>
+<a class="btn" href="#forgive">One last thing… ❤️</a>
+</div>
+</section>
+
+<section id="forgive">
+<div class="card">
+<div class="heart">🥺❤️</div>
+<h1>Can you forgive me?</h1>
+<p>You don't have to say yes just to make me feel better. I want your honest answer, whatever it is. ❤️</p>
+<button class="btn choice" onclick="answer('yes')">Yes ❤️</button>
+<button class="btn alt choice" onclick="answer('no')">Not yet 💔</button>
+<div id="result"></div>
+<p class="small">Your honest answer is saved to the private response database so it can appear on the dashboard. ❤️</p>
+</div>
+</section>
+
+<script>
+const SUPABASE_URL = 'https://kyixdwoluwjxidgzjnob.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5aXhkd29sdXdqeGlkZ3pqbm9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NTkwMzUsImV4cCI6MjEwNjMzNTAzNX0.qk9SnpS1L9LaD4lfoto743xHVDUa5CYvSRrjDJoPUtM';
+
+function showError(message){
+  const result=document.getElementById("result");
+  result.style.display="block";
+  result.textContent="⚠️ "+message;
+}
+
+async function saveAnswer(answer){
+  const result=document.getElementById("result");
+  result.style.display="block";
+  result.textContent="Saving your answer... 💗";
+
+  try{
+    const response = await fetch(SUPABASE_URL + "/rest/v1/responses", {
+      method:"POST",
+      headers:{
+        "apikey":SUPABASE_ANON_KEY,
+        "Authorization":"Bearer "+SUPABASE_ANON_KEY,
+        "Content-Type":"application/json",
+        "Accept":"application/json",
+        "Prefer":"return=minimal"
+      },
+      body:JSON.stringify({answer:answer})
+    });
+
+    if(!response.ok){
+      const detail = await response.text();
+      console.error("Supabase error:", response.status, detail);
+      showError("I couldn't save it yet. Supabase said: " + detail);
+      return false;
+    }
+    return true;
+  }catch(error){
+    console.error(error);
+    showError("I couldn't connect to the response server. Please check the website connection.");
+    return false;
+  }
+}
+
+async function answer(which){
+  const saved = await saveAnswer(which.toUpperCase());
+  if(!saved) return;
+
+  const result=document.getElementById("result");
+  result.style.display="block";
+  if(which==="yes"){
+    result.textContent="🥺❤️ Thank you. Your answer means so much to me.";
+    burst(["❤️","💕","💗","😘","🫂"]);
+  }else{
+    result.textContent="I understand. 🥺❤️ Take all the time you need. I’m not going to pressure you.";
+    burst(["💗","🫂","🥺"]);
+  }
+}
+
+function cuddle(){
+  const e=document.getElementById("hugEmoji"),t=document.getElementById("hugText");
+  e.classList.add("big");
+  t.textContent="Come here… 🫂❤️ biggest cuddle, nice and gentle. Stay as long as you need.";
+  burst(["🫂","❤️","💕"]);
+  setTimeout(()=>e.classList.remove("big"),900);
+}
+function mwah(){
+  document.getElementById("hugText").textContent="Mwahhh right back at you 😘❤️";
+  burst(["😘","❤️","💕"]);
+}
+function burst(items){
+  for(let i=0;i<16;i++){
+    const e=document.createElement("span");
+    e.className="float"; e.textContent=items[Math.floor(Math.random()*items.length)];
+    e.style.left=Math.random()*100+"vw";
+    e.style.animationDelay=Math.random()*1.1+"s";
+    document.body.appendChild(e);
+    setTimeout(()=>e.remove(),7500);
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apology Response Dashboard 💌</title>
+<style>
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:linear-gradient(135deg,#ffe0ea,#eee4ff,#e2f5ff);color:#4b2940;padding:35px 18px}
+main{max-width:850px;margin:auto;background:#ffffffea;padding:35px;border-radius:30px;box-shadow:0 20px 60px #4b28402b}
+h1{font-size:42px;margin-top:0}p{line-height:1.6}button{border:0;border-radius:999px;padding:13px 24px;background:#ef7198;color:white;font-weight:800;font-size:16px;cursor:pointer}
+.item{background:#fff4f8;padding:18px;border-radius:18px;margin:14px 0;border:1px solid #f2d4df}
+.yes{color:#16834b;font-weight:900;font-size:20px}.no{color:#b83b75;font-weight:900;font-size:20px}
+#message{margin:18px 0;font-weight:700}
+</style>
+</head>
+<body>
+<main>
+<h1>💌 Her Response</h1>
+<p>This dashboard shows the YES / NOT YET answers from the apology website.</p>
+<button onclick="loadResponses()">Refresh responses</button>
+<div id="message"></div>
+<div id="list"></div>
+</main>
+<script>
+const SUPABASE_URL='https://kyixdwoluwjxidgzjnob.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt5aXhkd29sdXdqeGlkZ3pqbm9iIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NTkwMzUsImV4cCI6MjEwNjMzNTAzNX0.qk9SnpS1L9LaD4lfoto743xHVDUa5CYvSRrjDJoPUtM';
+
+async function loadResponses(){
+  const msg=document.getElementById("message");
+  const list=document.getElementById("list");
+  msg.textContent="Loading responses...";
+
+  try{
+    const response=await fetch(
+      SUPABASE_URL+"/rest/v1/responses?select=id,answer,created_at&order=created_at.desc",
+      {headers:{"apikey":SUPABASE_ANON_KEY,"Authorization":"Bearer "+SUPABASE_ANON_KEY,"Accept":"application/json"}}
+    );
+    if(!response.ok){
+      const detail=await response.text();
+      throw new Error(detail);
+    }
+    const data=await response.json();
+
+    if(!data.length){
+      list.innerHTML="<p>No responses yet. When she clicks YES or NOT YET, it will appear here. ❤️</p>";
+    }else{
+      list.innerHTML=data.map(x =>
+        '<div class="item"><div class="'+(x.answer==="YES"?"yes":"no")+'">'+
+        (x.answer==="YES"?"YES ❤️":"NOT YET 🥺")+
+        '</div><div>'+new Date(x.created_at).toLocaleString()+'</div></div>'
+      ).join("");
+    }
+    msg.textContent="";
+  }catch(error){
+    console.error(error);
+    msg.textContent="⚠️ Could not load responses: "+error.message;
+  }
+}
+loadResponses();
+</script>
+</body>
+</html>
